@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCarRental } from "../redux/apiCall"; // Import your fetchCarRental action
 import { createLocationAsync } from "../redux/apiCall";
 
-
-function LocaForm({ form, onChange, onSubmit, error }) {
+function LocaForm({ form, onChange, error }) {
   const dispatch = useDispatch();
   const cars = useSelector((state) => state.car.cars.carsList); // Assuming cars are stored in Redux state
-  
+  const [selectedCar, setSelectedCar] = useState();
+  console.log(selectedCar);
+
   // Fetch car data from backend when the component mounts
   useEffect(() => {
     if (!cars || cars.length === 0) {
@@ -15,21 +16,40 @@ function LocaForm({ form, onChange, onSubmit, error }) {
     }
   }, []);
 
-const handleSubmit = (event) => {
-  event.preventDefault();
+  const onSubmit = (e) => {
+    e.preventDefault();
 
-  dispatch(createLocationAsync(form))
-    .unwrap()
-    .then(() => {
-      alert("Location created successfully!");
-      setForm({}); // Reset the form
-    })
-    .catch((error) => {
-      console.error("Error creating location:", error);
-      setError("Une erreur s'est produite lors de la création de la location.");
-    });
-};
+    const name = e.target["name"].value;
+    const lastname = e.target["prenom"].value;
+    const cin = e.target["cin"].value;
+    console.log(name);
+    //dispatch(createLocationAsync());
+  };
 
+  const calculateTotalPrice = (startDate, endDate, pricePerDay) => {
+    const daysDiff = Math.ceil(
+      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+    );
+    return daysDiff * pricePerDay;
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    dispatch(createLocationAsync(form))
+      .unwrap()
+      .then(() => {
+        alert("Location created successfully!");
+      })
+      .catch((error) => {
+        console.error("Error creating location:", error);
+      });
+  };
+
+  const handleImmatriculeCarChange = (e) => {
+    setSelectedCar(cars.filter((car) => car._id === e.target.value)[0]);
+    onChange(e);
+  };
 
   return (
     <div className="container-fluid">
@@ -55,6 +75,7 @@ const handleSubmit = (event) => {
               value={form.startDate}
               onChange={onChange}
               placeholder="Aujourd'hui"
+              max={form.endDate}
             />
           </div>
 
@@ -70,6 +91,7 @@ const handleSubmit = (event) => {
               value={form.endDate || ""}
               onChange={onChange}
               placeholder="Demain"
+              min={form.startDate}
             />
           </div>
 
@@ -82,7 +104,7 @@ const handleSubmit = (event) => {
               className="form-select"
               name="immatricule"
               value={form.immatricule}
-              onChange={onChange}
+              onChange={handleImmatriculeCarChange}
             >
               <option value="">Sélectionner une voiture</option>
               {cars && cars.length > 0 ? (
@@ -192,20 +214,25 @@ const handleSubmit = (event) => {
           <h2>{form.carName || "Aucune voiture sélectionnée"}</h2>
           <ul className="list-group">
             <li className="list-group-item">
-              Immatricule: {form.immatricule || "N/A"}
+              Immatricule: {selectedCar?.immatricule || "N/A"}
             </li>
             <li className="list-group-item">
-              Année Immatriculation: {form.year || "N/A"}
+              Année Immatriculation: {selectedCar?.year || "N/A"}
             </li>
             <li className="list-group-item">
-              Kilométrage: {form.kilometers || "N/A"}
+              Kilométrage: {selectedCar?.kilometers || "N/A"}
             </li>
             <li className="list-group-item">
-              Tarif Journalier: {form.pricePerDay || "N/A"}
+              Tarif Journalier: {selectedCar?.pricePerDay || "N/A"}
             </li>
           </ul>
           <div className="alert mt-3 text-center" style={{ fontSize: "50px" }}>
-            {form.pricePerDay || 0}.<span style={{ fontSize: "25px" }}>00 MAD</span>
+            {calculateTotalPrice(
+              form.startDate,
+              form.endDate,
+              selectedCar?.pricePerDay
+            ) || 0}
+            .<span style={{ fontSize: "25px" }}>00 MAD</span>
           </div>
         </aside>
       </div>

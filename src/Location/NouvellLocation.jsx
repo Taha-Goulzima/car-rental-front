@@ -45,7 +45,7 @@ function NouvelleLocation({ onAddLocation }) {
       if (selectedCar) {
         setForm((prevForm) => ({
           ...prevForm,
-          carName:  selectedCar.name,
+          carName: selectedCar.name,
           pricePerDay: selectedCar.pricePerDay,
           year: selectedCar.year,
           kilometers: selectedCar.kilometers,
@@ -63,8 +63,6 @@ function NouvelleLocation({ onAddLocation }) {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-
     const requiredFields = [
       "startDate",
       "endDate",
@@ -87,7 +85,9 @@ function NouvelleLocation({ onAddLocation }) {
     const dayDifference = (endDate - startDate) / (1000 * 60 * 60 * 24);
 
     if (dayDifference < 1) {
-      setError("La date de fin doit être supérieure à la date de départ d'au moins un jour.");
+      setError(
+        "La date de fin doit être supérieure à la date de départ d'au moins un jour."
+      );
       return;
     }
 
@@ -117,7 +117,12 @@ function NouvelleLocation({ onAddLocation }) {
         <h1 style={{ fontSize: "40px", fontWeight: "700" }} className="mb-4">
           Nouvelle Location
         </h1>
-        <LocaForm form={form} onChange={handleChange} onSubmit={handleSubmit} error={error} />
+        <LocaForm
+          form={form}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          error={error}
+        />
       </div>
     </MainLayout>
   );
