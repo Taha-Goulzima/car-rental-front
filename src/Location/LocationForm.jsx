@@ -22,7 +22,9 @@ function LocaForm({ form, onChange, error }) {
     const name = e.target["name"].value;
     const lastname = e.target["prenom"].value;
     const cin = e.target["cin"].value;
-    console.log(name);
+    const phone = e.target["phone"].value;
+    const address = e.target["address"].value;
+
     //dispatch(createLocationAsync());
   };
 
