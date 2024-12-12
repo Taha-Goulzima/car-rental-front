@@ -16,24 +16,37 @@ function LocaForm({ form, onChange, error }) {
     }
   }, []);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    const name = e.target["name"].value;
-    const lastname = e.target["prenom"].value;
-    const cin = e.target["cin"].value;
-    const phone = e.target["phone"].value;
-    const address = e.target["address"].value;
-
-    //dispatch(createLocationAsync());
-  };
-
   const calculateTotalPrice = (startDate, endDate, pricePerDay) => {
     const daysDiff = Math.ceil(
       (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
     );
     return daysDiff * pricePerDay;
   };
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const nom = e.target["name"].value;
+    const prenom = e.target["prenom"].value;
+    const cin = e.target["cin"].value;
+    const phone = e.target["phone"].value;
+    const address = e.target["address"].value;
+    const startDate = form.startDate;
+    const endDatevalue = form.endDate;
+    const CarId=selectedCar._id;
+    const data ={
+      startDate:startDate,
+    endDate: endDatevalue,
+    carId:CarId,
+    name: nom,
+    lastName:prenom ,
+    cin:cin ,
+    phoneNumber:phone ,
+    address: address,
+    price:calculateTotalPrice(startDate, endDatevalue,selectedCar?.pricePerDay)
+    }
+    dispatch(createLocationAsync(data));
+  };
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
